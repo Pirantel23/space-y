@@ -45,10 +45,12 @@ app.get("/api/user", (req, res) => {
   res.json({ username });
 });
 
-app.get("/*", (_, res) => {
+app.get("/*", (req, res) => {
   res.sendFile(path.join(rootDir, "spa/build/index.html"));
+  if (!req.cookies.username && req.path !== "/login") {
+    res.redirect("/login");
+  }
 });
-
 
 const options = {
   key: fs.readFileSync("certs/server.key"),
