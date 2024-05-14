@@ -26,7 +26,11 @@ app.post("/api/login", express.json(), (req, res) => {
   if (!username) {
     res.status(400).json({ error: "Username is required" });
   } else {
-    res.cookie("username", username);
+    res.cookie("username", username, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict"
+    });
     res.json({ username });
   }
 });
