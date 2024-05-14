@@ -6,54 +6,43 @@ export class Client {
   }
 
   async getUser() {
+    const response = await fetch("/api/user", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+    this.username = data.username;
     return this.username;
   }
 
   async loginUser(username) {
+    const response = await fetch("/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username }),
+    });
+    const data = await response.json();
     this.username = username;
     return this.username;
   }
 
   async logoutUser() {
+    const response = await fetch("/api/logout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
     this.username = null;
   }
 
   // Добавляем middleware для разбора JSON-тела запроса
   handleJSON() {
     return express.json();
-  }
-
-  // Метод для инициализации маршрутов API
-  initRoutes(app) {
-    // Маршрут для получения информации о пользователе
-    app.get("/api/user", async (req, res) => {
-      try {
-        const user = await this.getUser();
-        res.json({ username: user });
-      } catch (error) {
-        res.status(500).json({ error: error.message });
-      }
-    });
-
-    // Маршрут для логина пользователя
-    app.post("/api/login", this.handleJSON(), async (req, res) => {
-      try {
-        const { username } = req.body;
-        const loggedInUser = await this.loginUser(username);
-        res.json({ username: loggedInUser });
-      } catch (error) {
-        res.status(500).json({ error: error.message });
-      }
-    });
-
-    // Маршрут для логаута пользователя
-    app.post("/api/logout", async (req, res) => {
-      try {
-        await this.logoutUser();
-        res.json({ message: "User logged out successfully" });
-      } catch (error) {
-        res.status(500).json({ error: error.message });
-      }
-    });
   }
 }
