@@ -104,6 +104,52 @@ const options = {
   cert: fs.readFileSync("certs/server.cert"),
 };
 
+class MarsStorage {
+  #items = [];
+  #id = 0;
+
+  constructor() {
+  }
+
+  send(item) {
+    this.#items.push({
+      ...item,
+      id: this.#id++,
+    });
+  }
+
+  cancel(id) {
+    this.#items.splice(this.#items.indexOf(this.#items.find(item => item.id === id)), 1);
+  }
+
+  getDispatchedThings() {
+    return this.#items.slice();
+  }
+}
+
+const marsStorage = new MarsStorage();
+
+app.get("api/list", (req, res) => {
+  console.log(marsStorage.getDispatchedThings());
+  res.json({
+    items: marsStorage.getDispatchedThings(),
+  });
+});
+
+app.post("api/send", express.json(), (req, res) => {
+  marsStorage.send(req.body.item);
+  res.json({
+    items: marsStorage.getDispatchedThings(),
+  });
+});
+
+app.post("api/cancel", express.json(), (req, res) => {
+  marsStorage.cancel(req.body.id);
+  res.json({
+    items: marsStorage.getDispatchedThings(),
+  });
+});
+
 https.createServer(options, app).listen(port, () => {
   console.log(`App listening on port ${port} over HTTPS`);
 });
