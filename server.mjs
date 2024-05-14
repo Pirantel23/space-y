@@ -20,8 +20,8 @@ app.get("/client.mjs", (_, res) => {
   });
 });
 
-app.get("/", (_, res) => {
-  res.send(":)");
+app.get("/*", (_, res) => {
+  res.sendFile(path.join(rootDir, "spa/build/index.html"));
 });
 
 app.listen(port, () => {
