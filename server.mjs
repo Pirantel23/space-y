@@ -24,6 +24,12 @@ app.get("/*", (_, res) => {
   res.sendFile(path.join(rootDir, "spa/build/index.html"));
 });
 
-app.listen(port, () => {
-  console.log(`App listening on port ${port}`);
+
+const options = {
+  key: fs.readFileSync("certs/server.key"),
+  cert: fs.readFileSync("certs/server.cert"),
+};
+
+https.createServer(options, app).listen(port, () => {
+  console.log(`App listening on port ${port} over HTTPS`);
 });
